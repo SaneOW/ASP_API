@@ -23,7 +23,7 @@ namespace ASP_API.Controllers
         }
 
         // GET: api/Customers/5
-        [HttpGet("{id}")]
+        [HttpGet("ByID/{id}")]
         public async Task<ActionResult<Customer>> GetCustomer(int id)
         {
             var customer = await _context.Customers.FindAsync(id);
@@ -36,6 +36,20 @@ namespace ASP_API.Controllers
             return customer;
         }
 
+        [HttpGet("ByFirstName/{FirstName}")]
+        public async Task<ActionResult<IEnumerable<Customer>>> GetCustomersByName(string FirstName)
+        {
+            var customers = await _context.Customers
+                .Where(c => c.FirstName.Contains(FirstName) || c.LastName.Contains(FirstName))
+                .ToListAsync();
+
+            if (customers == null || customers.Count == 0)
+            {
+                return NotFound();
+            }
+
+            return customers;
+        }
         // POST: api/Customers
         [HttpPost]
         public async Task<ActionResult<Customer>> PostCustomer(Customer customer)

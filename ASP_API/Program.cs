@@ -8,7 +8,6 @@ builder.Services.AddDbContext<MesseDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddControllers();
-builder.Services.AddSwaggerGen();
 
 // CORS-Konfiguration
 builder.Services.AddCors(options =>
@@ -19,24 +18,10 @@ builder.Services.AddCors(options =>
                                        .AllowAnyHeader());
 });
 
-// Weitere Dienste und Konfigurationen...
-
 var app = builder.Build();
 
 // Middleware für CORS vor der Autorisierung verwenden
 app.UseCors("AllowAll");
-
-
-// Middleware-Konfigurationen
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI(options =>
-    {
-        options.SwaggerEndpoint("/swagger/v1/swagger.json", "Meine API V1");
-        options.RoutePrefix = string.Empty; // Setzt Swagger auf die Root-Seite
-    });
-}
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
