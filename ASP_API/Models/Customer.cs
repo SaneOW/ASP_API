@@ -1,4 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace ASP_API.Models
 {
@@ -33,6 +36,7 @@ namespace ASP_API.Models
         [Required]
         public byte[] Picture { get; set; }
 
-        public ICollection<Customer_Product> CustomerProducts { get; set; } = new List<Customer_Product>();
+        // Many-to-Many relationship with Product
+        public List<Product> Products { get; set; }
     }
 }

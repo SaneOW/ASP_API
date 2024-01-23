@@ -1,5 +1,7 @@
-﻿using ASP_API.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using ASP_API.Models;
+using System;
+using System.IO;
 using System.Reflection;
 
 namespace ASP_API
@@ -8,32 +10,25 @@ namespace ASP_API
     {
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Product> Products { get; set; }
-        public DbSet<Customer_Product> Customer_Products { get; set; }
 
-
-        public MesseDbContext(DbContextOptions<MesseDbContext> options) : base(options)
+        public MesseDbContext(DbContextOptions<MesseDbContext> options)
+        : base(options)
         {
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Customer_Product>()
-                .HasKey(cp => new { cp.CustomerId, cp.ProductId }); // Composite key
+            // Konfiguration der Many-to-Many Beziehung
+            modelBuilder.Entity<Customer>()
+                .HasMany(c => c.Products)
+                .WithMany(p => p.Customers)
+                .UsingEntity(j => j.ToTable("CustomerProducts"));
 
-            modelBuilder.Entity<Customer_Product>()
-                .HasOne(cp => cp.Customer)
-                .WithMany(c => c.CustomerProducts)
-                .HasForeignKey(cp => cp.CustomerId);
-
-            modelBuilder.Entity<Customer_Product>()
-                .HasOne(cp => cp.Product)
-                .WithMany(p => p.CustomerProducts)
-                .HasForeignKey(cp => cp.ProductId);
 
             modelBuilder.Entity<Product>().HasData(
-    new Product { ProductId = 1, ProductName = "Autos" },
-    new Product { ProductId = 2, ProductName = "Smartphones" },
-    new Product { ProductId = 3, ProductName = "Laptops" });
+        new Product { ProductId = 1, ProductName = "Autos" },
+        new Product { ProductId = 2, ProductName = "Smartphones" },
+        new Product { ProductId = 3, ProductName = "Laptops" });
         }
     }
 }

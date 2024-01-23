@@ -7,7 +7,7 @@
 namespace ASP_API.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -38,7 +38,7 @@ namespace ASP_API.Migrations
                 {
                     ProductId = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    ProductName = table.Column<string>(type: "TEXT", nullable: false)
+                    ProductName = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -46,24 +46,24 @@ namespace ASP_API.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Customer_Products",
+                name: "CustomerProducts",
                 columns: table => new
                 {
-                    CustomerId = table.Column<int>(type: "INTEGER", nullable: false),
-                    ProductId = table.Column<int>(type: "INTEGER", nullable: false)
+                    CustomersCustomerId = table.Column<int>(type: "INTEGER", nullable: false),
+                    ProductsProductId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Customer_Products", x => new { x.CustomerId, x.ProductId });
+                    table.PrimaryKey("PK_CustomerProducts", x => new { x.CustomersCustomerId, x.ProductsProductId });
                     table.ForeignKey(
-                        name: "FK_Customer_Products_Customers_CustomerId",
-                        column: x => x.CustomerId,
+                        name: "FK_CustomerProducts_Customers_CustomersCustomerId",
+                        column: x => x.CustomersCustomerId,
                         principalTable: "Customers",
                         principalColumn: "CustomerId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Customer_Products_Products_ProductId",
-                        column: x => x.ProductId,
+                        name: "FK_CustomerProducts_Products_ProductsProductId",
+                        column: x => x.ProductsProductId,
                         principalTable: "Products",
                         principalColumn: "ProductId",
                         onDelete: ReferentialAction.Cascade);
@@ -80,16 +80,16 @@ namespace ASP_API.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Customer_Products_ProductId",
-                table: "Customer_Products",
-                column: "ProductId");
+                name: "IX_CustomerProducts_ProductsProductId",
+                table: "CustomerProducts",
+                column: "ProductsProductId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Customer_Products");
+                name: "CustomerProducts");
 
             migrationBuilder.DropTable(
                 name: "Customers");
