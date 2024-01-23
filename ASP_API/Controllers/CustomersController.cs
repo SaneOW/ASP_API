@@ -18,44 +18,84 @@ namespace Project_Messe.Controllers
             _context = context;
         }
 
-        // GET: api/Customers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CustomerDto>>> GetCustomers()
         {
-            var customers = await _context.Customers
+            var customerDtos = await _context.Customers
+                .Include(c => c.Products) // Include products to access ProductIds
                 .Select(c => new CustomerDto
                 {
-                    
                     LastName = c.LastName,
-                    // ... Other properties ...
-                    ProductIds = c.Products.Select(p => p.ProductId).ToList()
+                    FirstName = c.FirstName,
+                    StreetAddress = c.StreetAddress,
+                    HouseNumber = c.HouseNumber,
+                    City = c.City,
+                    PostalCode = c.PostalCode,
+                    Country = c.Country,
+                    Picture = c.Picture,
+                    ProductIds = c.Products.Select(p => p.ProductId).ToList() // Convert products to ProductIds
                 })
                 .ToListAsync();
-            return customers;
+
+            return customerDtos;
         }
 
-        // GET: api/Customers/5
         [HttpGet("{id}")]
         public async Task<ActionResult<CustomerDto>> GetCustomer(int id)
         {
-            var customer = await _context.Customers
+            var customerDto = await _context.Customers
                 .Where(c => c.CustomerId == id)
+                .Include(c => c.Products) // Include products to access ProductIds
                 .Select(c => new CustomerDto
                 {
-                   
                     LastName = c.LastName,
-                    // ... Other properties ...
-                    ProductIds = c.Products.Select(p => p.ProductId).ToList()
+                    FirstName = c.FirstName,
+                    StreetAddress = c.StreetAddress,
+                    HouseNumber = c.HouseNumber,
+                    City = c.City,
+                    PostalCode = c.PostalCode,
+                    Country = c.Country,
+                    Picture = c.Picture,
+                    ProductIds = c.Products.Select(p => p.ProductId).ToList() // Convert products to ProductIds
                 })
                 .FirstOrDefaultAsync();
 
-            if (customer == null)
+            if (customerDto == null)
             {
                 return NotFound();
             }
 
-            return customer;
+            return customerDto;
         }
+        //  /api/customer/search?name=John
+        [HttpGet("search")]
+        public async Task<ActionResult<IEnumerable<CustomerDto>>> SearchCustomersByName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                return BadRequest("Der Suchname darf nicht leer sein.");
+            }
+
+            var customerDtos = await _context.Customers
+                .Include(c => c.Products) // Include products to access ProductIds
+                .Where(c => c.FirstName.Contains(name) || c.LastName.Contains(name))
+                .Select(c => new CustomerDto
+                {
+                    LastName = c.LastName,
+                    FirstName = c.FirstName,
+                    StreetAddress = c.StreetAddress,
+                    HouseNumber = c.HouseNumber,
+                    City = c.City,
+                    PostalCode = c.PostalCode,
+                    Country = c.Country,
+                    Picture = c.Picture,
+                    ProductIds = c.Products.Select(p => p.ProductId).ToList() // Convert products to ProductIds
+                })
+                .ToListAsync();
+
+            return customerDtos;
+        }
+
 
         // PUT: api/Customers/5
         [HttpPut("{id}")]
